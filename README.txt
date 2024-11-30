@@ -17,7 +17,7 @@ This is a basic intrusion response system simulation program where users can sel
 RUN AND NAVIGATION INTRUCTIONS:
 1] To run the program open the folder where it was downloaded/saved in the terminal and use the command [COPY/PASTE]
 	
-	python command_intrusion_response_system.py 	*OR*	python3 command_intrusion_response_system.py
+	python client.py 	*OR*	python3 client.py
 
 2] Or open folder in an IDE and simply press the run program button
 3] To navigate between simulation tab and management tab simply select the tabs on the User Interface
