@@ -11,7 +11,7 @@ from datetime import datetime
    [DEFENSIVE NETWORK SECURITY]
 '''
 
-class CommandIntrusionResponseSystem:
+class Client:
    
    def __init__(self, root):
       self.ascii_title = '''
@@ -456,7 +456,7 @@ class CommandIntrusionResponseSystem:
 
 def main():
    root = tk.Tk()
-   app = CommandIntrusionResponseSystem(root)
+   app = Client(root)
    root.mainloop()
 
 if __name__ == '__main__':
