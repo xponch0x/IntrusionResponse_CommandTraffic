@@ -58,7 +58,7 @@ class CommandIntrusionResponseSystem:
       
       self.root = root
       self.root.title('Command Intrusion Response System')
-      self.root.geometry('900x800')
+      self.root.geometry('900x850')
       self.root.configure(bg='#C0C0C0')
       
       self.title_font = ('Comic Sans MS', 12, 'bold')
