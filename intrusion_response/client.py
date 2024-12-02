@@ -3,9 +3,13 @@ from tkinter import ttk, messagebox
 import sqlite3
 import random
 from datetime import datetime
+import networkx as nx
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+
 
 '''
-   @Author Eli Hofmann, Austin Jansky, Leo Dunor
+   @Authors Eli Hofmann, Austin Jansky, Leo Dunor
    @Version 12-20-2024
    DESCRIPTION: A BASIC INTRUSION RESPONSE PROGRAM FOR ROBOTIC COMMANDS
    [DEFENSIVE NETWORK SECURITY]
@@ -14,27 +18,28 @@ from datetime import datetime
 class Client:
    
    def __init__(self, root):
-      self.ascii_title = '''
+      self.ascii_title = '''                                                                                                  
 
-  ______   ______   .___  ___. .___  ___.      ___      .__   __.  _______      __  .__   __. .___________..______       __    __       _______. __    ______   .__   __.
- /      | /  __  \  |   \/   | |   \/   |     /   \     |  \ |  | |       \    |  | |  \ |  | |           ||   _  \     |  |  |  |     /       ||  |  /  __  \  |  \ |  |
-|  ,----'|  |  |  | |  \  /  | |  \  /  |    /  ^  \    |   \|  | |  .--.  |   |  | |   \|  | `---|  |----`|  |_)  |    |  |  |  |    |   (----`|  | |  |  |  | |   \|  |
-|  |     |  |  |  | |  |\/|  | |  |\/|  |   /  /_\  \   |  . `  | |  |  |  |   |  | |  . `  |     |  |     |      /     |  |  |  |     \   \    |  | |  |  |  | |  . `  |
-|  `----.|  `--'  | |  |  |  | |  |  |  |  /  _____  \  |  |\   | |  '--'  |   |  | |  |\   |     |  |     |  |\  \----.|  `--'  | .----)   |   |  | |  `--'  | |  |\   |
- \______| \______/  |__|  |__| |__|  |__| /__/     \__\ |__| \__| |_______/    |__| |__| \__|     |__|     | _| `._____| \______/  |_______/    |__|  \______/  |__| \__|
-                                                                                                                                                                         
-.______       _______      _______..______     ______   .__   __.      _______. _______         _______.____    ____  _______..___________. _______ .___  ___.           
-|   _  \     |   ____|    /       ||   _  \   /  __  \  |  \ |  |     /       ||   ____|       /       |\   \  /   / /       ||           ||   ____||   \/   |           
-|  |_)  |    |  |__      |   (----`|  |_)  | |  |  |  | |   \|  |    |   (----`|  |__         |   (----` \   \/   / |   (----``---|  |----`|  |__   |  \  /  |           
-|      /     |   __|      \   \    |   ___/  |  |  |  | |  . `  |     \   \    |   __|         \   \      \_    _/   \   \        |  |     |   __|  |  |\/|  |           
-|  |\  \----.|  |____ .----)   |   |  |      |  `--'  | |  |\   | .----)   |   |  |____    .----)   |       |  | .----)   |       |  |     |  |____ |  |  |  |           
-| _| `._____||_______||_______/    | _|       \______/  |__| \__| |_______/    |_______|   |_______/        |__| |_______/        |__|     |_______||__|  |__|           
+
+  ______   ______   .___  ___. .___  ___.      ___      .__   __.  _______     .______       _______     _______..______     ______   .__   __.      _______. _______      
+ /      | /  __  \  |   \/   | |   \/   |     /   \     |  \ |  | |       \    |   _  \     |   ____|   /       ||   _  \   /  __  \  |  \ |  |     /       ||   ____|     
+|  ,----'|  |  |  | |  \  /  | |  \  /  |    /  ^  \    |   \|  | |  .--.  |   |  |_)  |    |  |__     |   (----`|  |_)  | |  |  |  | |   \|  |    |   (----`|  |__        
+|  |     |  |  |  | |  |\/|  | |  |\/|  |   /  /_\  \   |  . `  | |  |  |  |   |      /     |   __|     \   \    |   ___/  |  |  |  | |  . `  |     \   \    |   __|       
+|  `----.|  `--'  | |  |  |  | |  |  |  |  /  _____  \  |  |\   | |  '--'  |   |  |\  \----.|  |____.----)   |   |  |      |  `--'  | |  |\   | .----)   |   |  |____      
+ \______| \______/  |__|  |__| |__|  |__| /__/     \__\ |__| \__| |_______/    | _| `._____||_______|_______/    | _|       \______/  |__| \__| |_______/    |_______|     
+                                                                                                                                                                           
+                                               _______.____    ____  _______.___________. _______ .___  ___.                                                               
+                                              /       |\   \  /   / /       |           ||   ____||   \/   |                                                               
+                                             |   (----` \   \/   / |   (----`---|  |----`|  |__   |  \  /  |                                                               
+                                              \   \      \_    _/   \   \       |  |     |   __|  |  |\/|  |                                                               
+                                          .----)   |       |  | .----)   |      |  |     |  |____ |  |  |  |                                                               
+                                          |_______/        |__| |_______/       |__|     |_______||__|  |__|                                                               
+
 
       '''
 
       
       self.ascii_art = ''' 
-        	
          ______________
         /             /|
        /             / |
@@ -53,15 +58,14 @@ class Client:
 | ::::::::::::::[]  ::: |
 |   -----------     ::: |
 `-----------------------'
-
       '''
       
       self.root = root
       self.root.title('Command Intrusion Response System')
-      self.root.geometry('900x850')
+      self.root.geometry('900x900')
       self.root.configure(bg='#C0C0C0')
       
-      self.title_font = ('Comic Sans MS', 12, 'bold')
+      self.title_font = ('Comic Sans MS', 10, 'bold')
       self.normal_font = ('MS Sans Serif', 10)
       self.root.configure(relief=tk.RAISED, borderwidth=4)
       self.defcon_var = tk.StringVar(value='[DEFCON 5] ALL SYSTEMS ARE ONLINE AND IN STANDBY')
@@ -170,9 +174,12 @@ class Client:
       technique_management_frame = tk.Frame(notebook, bg='#C0C0C0', relief=tk.RIDGE, borderwidth=2)
       notebook.add(technique_management_frame, text='TECHNIQUE MANAGEMENT')
 
+      network_frame = tk.Frame(notebook, bg='#C0C0C0', relief=tk.RIDGE, borderwidth=2)
+      notebook.add(network_frame, text='NETWORK VISUAL')
       
       self.create_simulation_ui(simulation_frame)
       self.create_technique_management_ui(technique_management_frame)
+      self.create_network_visual_ui(network_frame)
 
    '''
       METHOD THAT GENERATES UI CONTROLS AND EVENTS FOR THE SIMULATION
@@ -279,9 +286,89 @@ class Client:
       #REFRESH
       self.refresh()
    
-
    '''
-      ADD METHOD THAT ADDS INPUT FROM MANAGEMENT UI INTO THE DATABSE FOR STORAGE
+      GENERATE NETWORK VISUALS UI
+   '''
+   def create_network_visual_ui(self, parent):
+      parent.configure(bg='#C0C0C0')
+      
+      #TITLE
+      title_label = tk.Label(parent, text='NETWORK TOPOLOGY ANALYZER', font=self.title_font, bg='#C0C0C0', fg='navy')
+      title_label.pack(pady=10)
+      
+      #CONTROL FRAME
+      control_frame = tk.Frame(parent, bg='#C0C0C0')
+      control_frame.pack(pady=10)
+      
+      
+      #VISUAL FRAME
+      visual_frame = tk.Frame(parent, bg='#C0C0C0')
+      visual_frame.pack(expand=True, fill='both', padx=10, pady=10)
+      
+      #LOG DISPLAY
+      log_display = tk.Text(parent, height=8, width=30, wrap=tk.WORD, font=('Courier', 10), bg='white', fg='black')
+      log_display.pack(pady=10)
+      
+      #GENERATE NETWORK
+      generate_btn = tk.Button(control_frame, text='GENERATE NETWORK', command=lambda: self.generate_network_topology(visual_frame, log_display),
+                              font=self.normal_font, relief=tk.RAISED, borderwidth=2)
+      generate_btn.pack(side=tk.LEFT, padx=5)
+      
+      #CLOSE
+      close_button = tk.Button(parent, text='CLOSE', command=self.root.quit, font=self.normal_font, relief=tk.RAISED, borderwidth=2, bg='red', fg='white')
+      close_button.pack(side=tk.BOTTOM, pady=10)
+      
+   '''
+      GENERATES GRAPH
+   '''
+   def generate_network_topology(self, visual_frame, log_display):
+      #CLEAR PREVIOUS VISUAL
+      for widget in visual_frame.winfo_children():
+         widget.destroy()
+      
+      #CLEAR LOGS
+      log_display.config(state=tk.NORMAL)
+      log_display.delete(1.0, tk.END)
+      
+      #CREATE GRAPH
+      graph = nx.barabasi_albert_graph(n=15, m=2)
+      
+      #CREATE FIGURE
+      plt.close('all')
+      fig, ax = plt.subplots(figsize=(4, 2), facecolor='#C0C0C0')
+      ax.set_facecolor('#C0C0C0')
+      
+      #DRAW NETWORK
+      pos = nx.spring_layout(graph, seed=42)
+      
+      #NODES
+      node_colors = ['blue', 'green', 'red', 'yellow']
+      colors = [random.choice(node_colors) for _ in graph.nodes()]
+      
+      nx.draw_networkx_nodes(graph, pos, node_color=colors, node_size=200, ax=ax)
+      
+      #EDGES
+      nx.draw_networkx_edges(graph, pos, alpha=0.5, ax=ax)
+      
+      #NODE LABELS
+      nx.draw_networkx_labels(graph, pos, ax=ax)
+      
+      ax.set_title('NETWORK TOPOLOGY', fontsize=10)
+      ax.axis('off')
+      
+      #EMBED
+      canvas = FigureCanvasTkAgg(fig, master=visual_frame)
+      canvas_widget = canvas.get_tk_widget()
+      canvas_widget.pack(expand=True, fill='both')
+      
+      #NETWORK DETAIL LOG
+      log_display.insert(tk.END, f'[NETWORK ANALYSIS]\n')
+      log_display.insert(tk.END, f'TOTAL NODES: {len(graph.nodes())}\n')
+      log_display.insert(tk.END, f'TOTAL CONNECTIONS: {len(graph.edges())}\n')
+      log_display.config(state=tk.DISABLED)
+   
+   '''
+      ADD METHOD THAT ADDS INPUT FROM MANAGEMENT UI INTO THE DATABASE FOR STORAGE
    '''
    def add_technique(self):
       #TAKES INPUT AND FORMATS IT IN DATABASE

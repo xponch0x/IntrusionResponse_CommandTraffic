@@ -73,12 +73,6 @@ POTENTIAL IMPROVEMENTS:
 	- Add login system for different user roles
 	- Implement access control for technique management
 
-3] Network Visualization
-
-	- Develop a network topology display
-	- Show potential attack vectors graphically
-	- Simulate network node interactions
-
 4] User Experience Improvements
 
 	- Dark/light mode toggle
