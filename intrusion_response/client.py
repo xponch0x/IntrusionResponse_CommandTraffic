@@ -5,7 +5,7 @@ import random
 from datetime import datetime
 
 '''
-   @Author Eli Hofmann
+   @Author Eli Hofmann, Austin Jansky, Leo Dunor
    @Version 12-20-2024
    DESCRIPTION: A BASIC INTRUSION RESPONSE PROGRAM FOR ROBOTIC COMMANDS
    [DEFENSIVE NETWORK SECURITY]
