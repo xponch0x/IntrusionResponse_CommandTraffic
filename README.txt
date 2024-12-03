@@ -10,6 +10,9 @@ Defensive Network Security Project
 [FOR INTENTED USE, EXECUTE ON A WINDOWS OS; MAC OS IS FINIKY WITH CONTROLS; NOT TESTED ON LINUX]
 
 PREREQUISITES:
+	-Python
+	-networkx [pip install networkx]
+	-matplotlib [pip install matplotlib]
 
 
 DESCRIPTION:
