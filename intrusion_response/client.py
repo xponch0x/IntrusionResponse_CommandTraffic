@@ -7,7 +7,6 @@ import networkx as nx
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
-
 '''
    @Authors Eli Hofmann, Austin Jansky, Leo Dunor
    @Version 12-20-2024
@@ -34,30 +33,6 @@ class Client:
                                               \   \      \_    _/   \   \       |  |     |   __|  |  |\/|  |                                                               
                                           .----)   |       |  | .----)   |      |  |     |  |____ |  |  |  |                                                               
                                           |_______/        |__| |_______/       |__|     |_______||__|  |__|                                                               
-
-
-      '''
-
-      
-      self.ascii_art = ''' 
-         ______________
-        /             /|
-       /             / |
-      /____________ /  |
-     | ___________ |   |
-     ||           ||   |
-     ||           ||   |
-     ||           ||   |
-     ||___________||   |
-     |   _______   |  /
-    /|  (_______)  | /
-   ( |_____________|/
-    \\
-.=======================.
-| ::::::::::::::::  ::: |
-| ::::::::::::::[]  ::: |
-|   -----------     ::: |
-`-----------------------'
       '''
       
       self.root = root
@@ -105,7 +80,8 @@ class Client:
             source_ip TEXT,
             attack_type TEXT,
             severity TEXT,
-            response TEXT                
+            response TEXT,
+            is_active BOOLEAN                
             )
       ''')
 
@@ -156,7 +132,9 @@ class Client:
       #DISPLAY PROGRAM TITLE
       title_label = tk.Label(self.root, text=self.ascii_title, font=('Courier', 6, 'bold'), fg='green', bg='#C0C0C0')
       title_label.pack(pady=10)
-
+      self.root.grid_rowconfigure(0, weight=1)
+      self.root.grid_columnconfigure(0, weight=1)
+      
       #FRAMES
       notebook = ttk.Notebook(self.root, style='TNotebook')
       notebook.pack(expand=True, fill='both', padx=10, pady=10)
@@ -170,12 +148,18 @@ class Client:
 
       simulation_frame = tk.Frame(notebook, bg='#C0C0C0', relief=tk.RIDGE, borderwidth=2)
       notebook.add(simulation_frame, text='SIMULATION')
+      simulation_frame.grid_rowconfigure(0, weight=1)
+      simulation_frame.grid_columnconfigure(0, weight=1)
 
       technique_management_frame = tk.Frame(notebook, bg='#C0C0C0', relief=tk.RIDGE, borderwidth=2)
       notebook.add(technique_management_frame, text='TECHNIQUE MANAGEMENT')
+      technique_management_frame.grid_rowconfigure(0, weight=1)
+      technique_management_frame.grid_columnconfigure(0, weight=1)
 
       network_frame = tk.Frame(notebook, bg='#C0C0C0', relief=tk.RIDGE, borderwidth=2)
       notebook.add(network_frame, text='NETWORK VISUAL')
+      network_frame.grid_rowconfigure(0, weight=1)
+      network_frame.grid_columnconfigure(0, weight=1)
       
       self.create_simulation_ui(simulation_frame)
       self.create_technique_management_ui(technique_management_frame)
@@ -187,52 +171,48 @@ class Client:
    def create_simulation_ui(self, parent):
       parent.configure(bg='#C0C0C0')
       
-      #SPLIT FRAME FOR ART
-      left_frame = tk.Frame(parent, bg='#C0C0C0', width=300)
-      left_frame.pack(side=tk.LEFT, fill=tk.Y, padx=10, pady=10)
-      left_frame.pack_propagate(False)
+      #PARENT GRID
+      parent.grid_rowconfigure(0, weight=0)
+      parent.grid_rowconfigure(1, weight=0)
+      parent.grid_rowconfigure(2, weight=0)
+      parent.grid_rowconfigure(3, weight=0)
+      parent.grid_columnconfigure(0, weight=1)
       
-      right_frame = tk.Frame(parent, bg='#C0C0C0')
-      right_frame.pack(side=tk.RIGHT, expand=True, fill=tk.BOTH, padx=10, pady=10)
-      
-      #DISPLAY ART
-      ascii_art_label = tk.Label(left_frame, text=self.ascii_art, font=('Courier', 14), fg='black', bg='#C0C0C0', justify=tk.LEFT)
-      ascii_art_label.pack(pady=20)
       
       #TITLE LABEL
-      title_label = tk.Label(parent, text='NETWORK INTRUSION SIMULATOR', font=self.title_font, bg='#C0C0C0', fg='navy')
-      title_label.pack(pady=10)
+      title_label = tk.Label(parent, text='NETWORK INTRUSION SIMULATOR', font=self.title_font, bg='#C0C0C0', fg='navy', anchor='center')
+      title_label.grid(row=0, column=0,pady=10, sticky='ew')
       
       #DEFCON LABEL
-      self.defcon_label = tk.Label(parent, textvariable=self.defcon_var, font=('Courier', 12, 'bold'), bg='#C0C0C0', fg='green')
-      self.defcon_label.pack(pady=5)
+      self.defcon_label = tk.Label(parent, textvariable=self.defcon_var, font=('Courier', 12, 'bold'), bg='#C0C0C0', fg='green', anchor='center')
+      self.defcon_label.grid(row=1, column=0, pady=10, sticky='ew')
 
       control_frame = tk.Frame(parent, bg='#C0C0C0')
-      control_frame.pack(pady=10)
+      control_frame.grid(row=2, column=0, pady=10, sticky='ew')
+      control_frame.grid_columnconfigure(0, weight=1)
+      control_frame.grid_columnconfigure(1, weight=1)
 
       #SELECT TECHNIQUE
-      tk.Label(control_frame, text='SELECT TECHNIQUE:', font=self.normal_font, bg='#C0C0C0').grid(row=0, column=0, padx=5, pady=5)
+      technique_label = tk.Label(control_frame, text='SELECT TECHNIQUE:', font=self.normal_font, bg='#C0C0C0')
+      technique_label.grid(row=0, column=0, padx=5, pady=5, sticky='ew')
+    
       self.technique_var = tk.StringVar()
       techniques = self.get_technique_names()
       technique_dropdown = ttk.Combobox(control_frame, textvariable=self.technique_var, values=techniques, width=30, state='readonly', font=self.normal_font)
-      technique_dropdown.grid(row=0, column=1, padx=5, pady=5)
+      technique_dropdown.grid(row=1, column=0, padx=5, pady=5, sticky='ew')
 
       #START SIM
       self.start_button = tk.Button(control_frame, text='START SIMULATION', command=self.start_simulation, font=self.normal_font, relief=tk.RAISED, borderwidth=2)
-      self.start_button.grid(row=1, column=0, padx=5, pady=5)
-
+      self.start_button.grid(row=2, column=0, padx=5, pady=5, sticky='ew')
+      
       #STOP SIM
       self.stop_button = tk.Button(control_frame, text='STOP SIMULATION', command=self.stop_simulation, state=tk.DISABLED, font=self.normal_font, relief=tk.RAISED, borderwidth=2)
-      self.stop_button.grid(row=1, column=1, padx=5, pady=5)
+      self.stop_button.grid(row=2, column=1, padx=5, pady=5, sticky='ew')
 
       #UPDATE LOG DISPLAY
-      self.simulation_log = tk.Text(parent, height=50, width=90, wrap=tk.WORD, font=('Courier', 10), bg='white', fg='black')
-      self.simulation_log.pack(pady=10)
+      self.simulation_log = tk.Text(parent, height=40, width=80, wrap=tk.WORD, font=('Courier', 10), bg='white', fg='black')
+      self.simulation_log.grid(row=3, column=0, pady=10, sticky='nsew')
       self.simulation_log.config(state=tk.DISABLED)
-      
-      #CLOSE
-      close_button = tk.Button(left_frame, text='CLOSE', command=self.root.quit, font=self.normal_font, relief=tk.RAISED, borderwidth=2, bg='red', fg='white')
-      close_button.pack(side=tk.BOTTOM, pady=5)
 
    '''
       METHOD THAT GENERATES THE MANAGEMENT UI CONTROLS AND EVENTS
@@ -240,48 +220,58 @@ class Client:
    def create_technique_management_ui(self, parent):
       parent.configure(bg='#C0C0C0')
       
+      #PARENT GRID
+      parent.grid_rowconfigure(0, weight=0)
+      parent.grid_rowconfigure(1, weight=0)
+      parent.grid_rowconfigure(2, weight=0)
+      parent.grid_rowconfigure(3, weight=1)
+      parent.grid_columnconfigure(0, weight=1)
+      
+      
       title_label = tk.Label(parent, text='INTRUSION TECHNIQUE MANAGEMENT', font=self.title_font, bg='#C0C0C0', fg='navy')
-      title_label.pack(pady=10)
+      title_label.grid(row=1, column=0, pady=10, sticky='ew')
 
       input_frame = tk.Frame(parent, bg='#C0C0C0')
-      input_frame.pack(pady=10)
-
-      #TECHNIQUE NAME
-      tk.Label(input_frame, text='TECHNIQUE NAME:', font=self.normal_font, bg='#C0C0C0').grid(row=0, column=0, padx=5, pady=5)
-      self.name_var = tk.StringVar()
-      name_entry = tk.Entry(input_frame, width=30, textvariable=self.name_var, font=self.normal_font)
-      name_entry.grid(row=0, column=1, padx=5, pady=5)
-
-      #DESCRIPTION
-      tk.Label(input_frame, text='DESCRIPTION:', font=self.normal_font, bg='#C0C0C0').grid(row=1, column=0, padx=5, pady=5)
-      self.description_var = tk.StringVar()
-      description_entry = tk.Entry(input_frame, width=30, textvariable=self.description_var, font=self.normal_font)
-      description_entry.grid(row=1, column=1, padx=5, pady=5)
-
-      #SEVERITY
-      tk.Label(input_frame, text='SEVERITY:', font=self.normal_font, bg='#C0C0C0').grid(row=2, column=0, padx=5, pady=5)
+      input_frame.grid(row=1, column=0, pady=10, sticky='ew')
+      
+      input_frame.grid_columnconfigure(0, weight=1)
+      input_frame.grid_columnconfigure(1, weight=3)
+      
+      #DEFAULT
+      self.name_var = tk.StringVar(value='')
+      self.description_var = tk.StringVar(value='')
       self.severity_var = tk.StringVar(value='LOW')
-      severity_options = ['LOW', 'MEDIUM', 'HIGH', 'CRITICAL']
-      severity_dropdown = ttk.Combobox(input_frame, textvariable=self.severity_var, values=severity_options, width=27, state='readonly', font=self.normal_font)
-      severity_dropdown.grid(row=2, column=1, padx=5, pady=5)
+      self.response_var = tk.StringVar(value='')
 
-      #RESPONSE
-      tk.Label(input_frame, text='RESPONSE:', font=self.normal_font, bg='#C0C0C0').grid(row=3, column=0, padx=5, pady=5)
-      self.response_var = tk.StringVar()
-      response_entry = tk.Entry(input_frame, width=30, textvariable=self.response_var, font=self.normal_font)
-      response_entry.grid(row=3, column=1, padx=5, pady=5)
+      labels = ['TECHNIQUE NAME:', 'DESCRIPTION:', 'SEVERITY:', 'RESPONSE:']
+      variables = [self.name_var, self.description_var, self.severity_var, self.response_var]
+    
+      #LABELS AND ENTRIES
+      for i, (label_text, var) in enumerate(zip(labels, variables)):
+         label = tk.Label(input_frame, text=label_text, font=self.normal_font, bg='#C0C0C0')
+         label.grid(row=i, column=0, padx=5, pady=5, sticky='e')
+        
+         if label_text == 'SEVERITY:':
+            severity_options = ['LOW', 'MEDIUM', 'HIGH', 'CRITICAL']
+            entry = ttk.Combobox(input_frame, textvariable=var, values=severity_options, 
+                                 width=27, state='readonly', font=self.normal_font)
+         else:
+            entry = tk.Entry(input_frame, width=30, textvariable=var, font=self.normal_font)
+        
+         entry.grid(row=i, column=1, padx=5, pady=5, sticky='ew')
 
       #ADD BUTTON
       add_button = tk.Button(parent, text='ADD TECHNIQUE', command=self.add_technique, font=self.normal_font, relief=tk.RAISED, borderwidth=2)
-      add_button.pack(pady=10)
+      add_button.grid(row=2, column=0, pady=10)
 
       #LIST
       self.techniques_list = tk.Text(parent, width=100, height=15, wrap=tk.WORD, font=('Courier', 10), bg='white', fg='black')
-      self.techniques_list.pack(pady=10)
+      self.techniques_list.grid(row=3, column=0, pady=10, sticky='nsew')
+      
 
       #CLOSE
       close_button = tk.Button(parent, text='CLOSE', command=self.root.quit, font=self.normal_font, relief=tk.RAISED, borderwidth=2, bg='red', fg='white')
-      close_button.pack(side=tk.BOTTOM, pady=10)
+      close_button.grid(row=4, column=0, pady=10)
       
       #REFRESH
       self.refresh()
@@ -292,31 +282,40 @@ class Client:
    def create_network_visual_ui(self, parent):
       parent.configure(bg='#C0C0C0')
       
+      #PARENT GRID
+      parent.grid_rowconfigure(0, weight=0)
+      parent.grid_rowconfigure(1, weight=0)
+      parent.grid_rowconfigure(2, weight=1)
+      parent.grid_rowconfigure(3, weight=0)
+      parent.grid_columnconfigure(0, weight=1)
+      
       #TITLE
       title_label = tk.Label(parent, text='NETWORK TOPOLOGY ANALYZER', font=self.title_font, bg='#C0C0C0', fg='navy')
-      title_label.pack(pady=10)
+      title_label.grid(row=0, column=0, pady=10, sticky='ew')
       
       #CONTROL FRAME
       control_frame = tk.Frame(parent, bg='#C0C0C0')
-      control_frame.pack(pady=10)
+      control_frame.grid(row=1, column=0, pady=10, sticky='ew')
+      control_frame.grid_columnconfigure(0, weight=1)
       
       
       #VISUAL FRAME
       visual_frame = tk.Frame(parent, bg='#C0C0C0')
-      visual_frame.pack(expand=True, fill='both', padx=10, pady=10)
+      visual_frame.grid(row=2, column=0, padx=10, pady=10, sticky='nsew')
+      visual_frame.grid_rowconfigure(0, weight=1)
+      visual_frame.grid_columnconfigure(0, weight=1)
       
       #LOG DISPLAY
       log_display = tk.Text(parent, height=8, width=30, wrap=tk.WORD, font=('Courier', 10), bg='white', fg='black')
-      log_display.pack(pady=10)
+      log_display.grid(row=3, column=0, pady=10, sticky='ew')
       
       #GENERATE NETWORK
-      generate_btn = tk.Button(control_frame, text='GENERATE NETWORK', command=lambda: self.generate_network_topology(visual_frame, log_display),
-                              font=self.normal_font, relief=tk.RAISED, borderwidth=2)
-      generate_btn.pack(side=tk.LEFT, padx=5)
+      generate_btn = tk.Button(control_frame, text='GENERATE NETWORK', command=lambda: self.generate_network_topology(visual_frame, log_display), font=self.normal_font, relief=tk.RAISED, borderwidth=2)
+      generate_btn.grid(row=0, column=0, padx=10)
       
       #CLOSE
       close_button = tk.Button(parent, text='CLOSE', command=self.root.quit, font=self.normal_font, relief=tk.RAISED, borderwidth=2, bg='red', fg='white')
-      close_button.pack(side=tk.BOTTOM, pady=10)
+      close_button.grid(row=4, column=0, pady=10)
       
    '''
       GENERATES GRAPH
@@ -334,7 +333,6 @@ class Client:
       graph = nx.barabasi_albert_graph(n=15, m=2)
       
       #CREATE FIGURE
-      plt.close('all')
       fig, ax = plt.subplots(figsize=(4, 2), facecolor='#C0C0C0')
       ax.set_facecolor('#C0C0C0')
       
@@ -359,7 +357,9 @@ class Client:
       #EMBED
       canvas = FigureCanvasTkAgg(fig, master=visual_frame)
       canvas_widget = canvas.get_tk_widget()
-      canvas_widget.pack(expand=True, fill='both')
+      canvas_widget.grid(row=0, column=0, sticky='nsew')
+      visual_frame.grid_rowconfigure(0, weight=1)
+      visual_frame.grid_columnconfigure(0, weight=1)
       
       #NETWORK DETAIL LOG
       log_display.insert(tk.END, f'[NETWORK ANALYSIS]\n')
@@ -378,7 +378,7 @@ class Client:
       response = self.response_var.get().strip().upper()
 
       #SIMPLE VALIDATION
-      if not name or not description or not response:
+      if not all([name, description, severity, response]):
          messagebox.showerror('[ERROR]', 'PLEASE FILL IN ALL FIELDS')
          return
       
@@ -442,7 +442,7 @@ class Client:
    def get_technique_names(self):
       self.cursor.execute('SELECT name FROM intrusion_command_techniques')
       return [technique[0] for technique in self.cursor.fetchall()]
-   
+      
    '''
       METHOD THAT STARTS SIMULATION FOR SELECTED TECHNIQUE
    '''
@@ -465,31 +465,92 @@ class Client:
       severity, response = result if result else ('UNKOWN', 'NO RESPONSE DEFINED')
       
       if severity == 'LOW':
-         self.defcon_var.set('[DEFCON 4] ELEVATED THREAT')
-         self.defcon_label.config(fg='green')
+         defcon_level = '[DEFCON 4] ELEVATED THREAT'
+         defcon_color = 'green'
       elif severity == 'MEDIUM':
-         self.defcon_var.set('[DEFCON 3] INCREASED READINESS')
-         self.defcon_label.config(fg='yellow')
+         defcon_level = '[DEFCON 3] INCREASED READINESS'
+         defcon_color = 'yellow'
       elif severity == 'HIGH':
-         self.defcon_var.set('[DEFCON 2] FURTHER ESCALATION')
-         self.defcon_label.config(fg='red')
+         defcon_level = '[DEFCON 2] FURTHER ESCALATION'
+         defcon_color = 'red'
       elif severity == 'CRITICAL':
-         self.defcon_var.set('[DEFCON 1] MAXIMUM ALERT')
-         self.defcon_label.config(fg='white')
+         defcon_level = '[DEFCON 1] MAXIMUM ALERT'
+         defcon_color = 'white'
       else:
-         self.defcon_var.set('[DEFCON 5] ALL SYSTEMS ARE ONLINE AND IN STANDBY')
-         self.defcon_label.config(fg='blue')
+         defcon_level = '[DEFCON 5] ALL SYSTEMS ARE ONLINE AND IN STANDBY'
+         defcon_color = 'blue'
          
+      '''
+      CUSTOM MESSAGE BOX THAT SCALES
+      '''
+      def custom_messagebox(title, message, message_type='info'):
+         root = tk.Tk()
+         root.title(title)
+         root.resizable(False, False)
       
+         #MATCH SYSTEM
+         root.configure(bg='SystemButtonFace')
+      
+         #FRAME
+         frame = tk.Frame(root, padx=20, pady=20)
+         frame.pack(fill='both', expand=True)
+      
+         #WORD WRAP
+         msg_label = tk.Label(frame, text=message, wraplength=400, justify=tk.CENTER, font=('Arial', 10))
+         msg_label.pack(pady=10)
+      
+      
+         if message_type == 'question':
+            #YES
+            def on_yes():
+               root.result = True
+               root.destroy()
+            #NO
+            def on_no():
+               root.result = False
+               root.destroy()
+         
+            btn_frame = tk.Frame(frame)
+            btn_frame.pack(pady=10)
+         
+            yes_btn = tk.Button(btn_frame, text='YES', command=on_yes, width=10)
+            no_btn = tk.Button(btn_frame, text='NO', command=on_no, width=10)
+         
+            yes_btn.pack(padx=5)
+            no_btn.pack(padx=5)
+         
+            #WAIT FOR RESPONSE
+            root.wait_window(root)
+            return root.result
+         
+      #PROMPT USER WITH THREATE DETAILS AND RESPONSES
+      alert_message = (
+         f"THREAT DETECTED!\n\n"
+         f"TYPE: {technique}\n"
+         f"SEVERITY: {severity}\n"
+         f"RECOMMENDED RESPONSE: {response}\n\n"
+         "ELIMINATE THREAT?"
+      )
+
+      
+      
+      #SET UP LOG
       self.simulation_log.config(state=tk.NORMAL)
       self.simulation_log.delete(1.0, tk.END)
       
+      #INSERT START TIME
       self.simulation_log.insert(tk.END, f'STARTING SIMULATION: {technique}\n')
       self.simulation_log.insert(tk.END, f'TIMESTAMP: {datetime.now()}\n')
       
       #GENERATE RANDOM IP
       source_ip = self.generate_ip()
       self.simulation_log.insert(tk.END, f'SOURCE IP: {source_ip}\n')
+      
+      #DISPLAY RESPONSE
+      self.simulation_log.insert(tk.END, f'SEVERITY: [{severity}]\n')
+      self.simulation_log.insert(tk.END, f'RESPONSE: {response}\n')
+      
+      threat_response = custom_messagebox(defcon_level, alert_message, 'question')
       
       #FETCH RESPONSE AND SEVERITY
       self.cursor.execute('''
@@ -500,20 +561,71 @@ class Client:
       result = self.cursor.fetchone()
       severity, response = result if result else ('UNKNOWN', 'NO RESPONSE DEFINED')
       
+      
+      
       #INSERT EVENT INTO LOG TABLE
       try:
-         self.cursor.execute('''
-            INSERT INTO intrusion_command_events
-            (timestamp, source_ip, attack_type, severity, response)
-            VALUES (?, ?, ?, ?, ?)
-         ''', (datetime.now(), source_ip, technique, severity, response))
-         self.conn.commit()
+         if threat_response:
+            self.simulation_log.insert(tk.END, 'THREAT STATUS: NEUTRALIZED\n')
+            messagebox.showinfo(
+               '[DEFCON 5] THREAT ELIMINATED',
+               'THREAT HAS BEEN ELIMINATED\n'
+               'ALL ISSUES RESOLVED')
+            
+            #LOGGED AS RESOLVED
+            self.cursor.execute('''
+               INSERT INTO intrusion_command_events
+               (timestamp, source_ip, attack_type, severity, response, is_active)
+               VALUES (?, ?, ?, ?, ?, ?)
+            ''', (datetime.now(), source_ip, technique, severity, 'HANDLED', False))
+            self.conn.commit()
+            
+            self.defcon_var.set('[DEFCON 5] ALL SYSTEMS ARE ONLINE AND IN STANDBY')
+            self.defcon_label.config(fg='blue')
+         else:
+            #USER CHOSE NO
+            are_you_positive = ('ARE YOU SURE YOU DONT WANT TO ACT?\n\n'
+                                '[YES: THREAT STAYS ACTIVE] | [NO: THREAT IS NEUTRALIZED]\n')
+            
+            confirm_nonreact = custom_messagebox(defcon_level, are_you_positive, 'question'
+               
+            )
+            
+            #USER DECIDES TO ACT
+            if not confirm_nonreact:
+               self.simulation_log.insert(tk.END, 'THREAT STATUS: NEUTRALIZED\n')
+               
+               messagebox.showinfo(
+               '[DEFCON 5] THREAT ELIMINATED',
+               'THREAT HAS BEEN ELIMINATED\n'
+               'ALL ISSUES RESOLVED')
+               
+               #LOGGED AS RESOLVED
+               self.cursor.execute('''
+                  INSERT INTO intrusion_command_events
+                  (timestamp, source_ip, attack_type, severity, response, is_active)
+                  VALUES (?, ?, ?, ?, ?, ?)
+               ''', (datetime.now(), source_ip, technique, severity, 'HANDLED', True))
+               self.conn.commit()
+               
+               self.defcon_var.set('[DEFCON 5] ALL SYSTEMS ARE ONLINE AND IN STANDBY')
+               self.defcon_label.config(fg='blue')
+            else:
+               #USER CONFIRMS NONREACTION
+               self.simulation_log.insert(tk.END, 'THREAT STATUS: ACTIVE\n')
+               
+               #LOGGED AS ACTIVE
+               self.cursor.execute('''
+                  INSERT INTO intrusion_command_events
+                  (timestamp, source_ip, attack_type, severity, response, is_active)
+                  VALUES (?, ?, ?, ?, ?, ?)
+               ''', (datetime.now(), source_ip, technique, severity, 'IGNORED', True))
+               self.conn.commit()
+               
+               self.defcon_var.set(defcon_level)
+               self.defcon_label.config(fg=defcon_color)
       except sqlite3.Error as e:
          self.simulation_log.insert(tk.END, f'DATABASE ERROR: {str(e)}\n')
-      
-      #DISPLAY RESPONSE
-      self.simulation_log.insert(tk.END, f'SEVERITY: [{severity}]\n')
-      self.simulation_log.insert(tk.END, f'RESPONSE: {response}\n')
       
       self.simulation_log.config(state=tk.DISABLED)
       
@@ -526,6 +638,8 @@ class Client:
    def stop_simulation(self):
       self.defcon_var.set('[DEFCON 5] ALL SYSTEMS ARE ONLINE AND IN STANDBY')
       self.defcon_label.config(fg='blue')
+      
+      
       
       self.simulation_log.config(state=tk.NORMAL)
       self.simulation_log.insert(tk.END, f'SIMULATION STOPPED: {datetime.now()}\n\n')
