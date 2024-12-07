@@ -16,7 +16,7 @@ PREREQUISITES:
 
 DESCRIPTION:
 
-This is a basic intrusion response system simulation program where users can select and add techniques to the simulation to see log events occur and receive a response on what the system should do, it also has a visual network node topography to visually see network connections.
+This is a basic intrusion response system simulation program where users can select and add techniques to the simulation to see log events occur and receive a response on what the system should do, it also has a visual network node topography to visually see network connections and the functionality to be able to export logs to a text file.
 
 
 RUN AND NAVIGATION INSTRUCTIONS:
@@ -43,6 +43,13 @@ MANAGEMENT TAB INSTRUCTIONS:
 NETWORK VISUAL TAB INSTRUCTIONS:
 1] All you need to do is press the GENERATE NETWORK button to visualize the topography of a network 
 
+EVENT LOG TAB
+1] To refresh the log display press the refresh button
+2] To export log data, select the export button and select the desired location to save
+
+ABOUT TAB
+1] Displays project software information 
+
 EXIT INSTRUCTIONS:
 1] When ready to close the program you can click the X button on the window bar or conveniently on all tabs there is a close button at the bottom
 
@@ -58,7 +65,7 @@ FUNCTIONALITY AND STRUCTURE:
 	- Severity classifications [LOW, MEDIUM, HIGH, CRITICAL] utilizing DEFCON levels as a nod to the Pentagon
 	- Dynamic technique addition
 	- Simulation of network intrusion scenarios
-	- Event logging and tracking
+	- Event logging/exporting and tracking
 	- Visualization of a network
 
 
@@ -75,7 +82,6 @@ POTENTIAL IMPROVEMENTS:
 
 	- Generate comprehensive PDF reports
 	- Create data visualization for attack trends
-	- Implement export functionality for logs and techniques
 
 3] User Authentication
 
