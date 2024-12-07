@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import ttk, messagebox, filedialog
 import sqlite3
 import random
 from datetime import datetime
@@ -20,12 +20,12 @@ class Client:
       self.ascii_title = '''                                                                                                  
 
 
-  ______   ______   .___  ___. .___  ___.      ___      .__   __.  _______     .______       _______     _______..______     ______   .__   __.      _______. _______      
- /      | /  __  \  |   \/   | |   \/   |     /   \     |  \ |  | |       \    |   _  \     |   ____|   /       ||   _  \   /  __  \  |  \ |  |     /       ||   ____|     
-|  ,----'|  |  |  | |  \  /  | |  \  /  |    /  ^  \    |   \|  | |  .--.  |   |  |_)  |    |  |__     |   (----`|  |_)  | |  |  |  | |   \|  |    |   (----`|  |__        
-|  |     |  |  |  | |  |\/|  | |  |\/|  |   /  /_\  \   |  . `  | |  |  |  |   |      /     |   __|     \   \    |   ___/  |  |  |  | |  . `  |     \   \    |   __|       
-|  `----.|  `--'  | |  |  |  | |  |  |  |  /  _____  \  |  |\   | |  '--'  |   |  |\  \----.|  |____.----)   |   |  |      |  `--'  | |  |\   | .----)   |   |  |____      
- \______| \______/  |__|  |__| |__|  |__| /__/     \__\ |__| \__| |_______/    | _| `._____||_______|_______/    | _|       \______/  |__| \__| |_______/    |_______|     
+         ______   ______   .___  ___. .___  ___.      ___      .__   __.  _______     .______       _______     _______..______     ______   .__   __.      _______. _______      
+        /      | /  __  \  |   \/   | |   \/   |     /   \     |  \ |  | |       \    |   _  \     |   ____|   /       ||   _  \   /  __  \  |  \ |  |     /       ||   ____|     
+       |  ,----'|  |  |  | |  \  /  | |  \  /  |    /  ^  \    |   \|  | |  .--.  |   |  |_)  |    |  |__     |   (----`|  |_)  | |  |  |  | |   \|  |    |   (----`|  |__        
+       |  |     |  |  |  | |  |\/|  | |  |\/|  |   /  /_\  \   |  . `  | |  |  |  |   |      /     |   __|     \   \    |   ___/  |  |  |  | |  . `  |     \   \    |   __|       
+       |  `----.|  `--'  | |  |  |  | |  |  |  |  /  _____  \  |  |\   | |  '--'  |   |  |\  \----.|  |____.----)   |   |  |      |  `--'  | |  |\   | .----)   |   |  |____      
+       \ ______| \______/  |__|  |__| |__|  |__| /__/     \__\ |__| \__| |_______/    | _| `._____||_______|_______/    | _|       \______/  |__| \__| |_______/    |_______|     
                                                                                                                                                                            
                                                _______.____    ____  _______.___________. _______ .___  ___.                                                               
                                               /       |\   \  /   / /       |           ||   ____||   \/   |                                                               
@@ -161,9 +161,21 @@ class Client:
       network_frame.grid_rowconfigure(0, weight=1)
       network_frame.grid_columnconfigure(0, weight=1)
       
+      event_log_frame = tk.Frame(notebook, bg='#C0C0C0', relief=tk.RIDGE, borderwidth=2)
+      notebook.add(event_log_frame, text='EVENT LOGS')
+      event_log_frame.grid_rowconfigure(0, weight=1)
+      event_log_frame.grid_columnconfigure(0, weight=1)
+      
+      about_frame = tk.Frame(notebook, bg='#C0C0C0', relief=tk.RIDGE, borderwidth=2)
+      notebook.add(about_frame, text='ABOUT')
+      about_frame.grid_rowconfigure(0, weight=1)
+      about_frame.grid_columnconfigure(0, weight=1)
+      
       self.create_simulation_ui(simulation_frame)
       self.create_technique_management_ui(technique_management_frame)
       self.create_network_visual_ui(network_frame)
+      self.create_event_log_ui(event_log_frame)
+      self.create_about_ui(about_frame)
 
    '''
       METHOD THAT GENERATES UI CONTROLS AND EVENTS FOR THE SIMULATION
@@ -199,19 +211,23 @@ class Client:
       self.technique_var = tk.StringVar()
       techniques = self.get_technique_names()
       technique_dropdown = ttk.Combobox(control_frame, textvariable=self.technique_var, values=techniques, width=30, state='readonly', font=self.normal_font)
-      technique_dropdown.grid(row=1, column=0, padx=5, pady=5, sticky='ew')
+      technique_dropdown.grid(row=1, column=0, padx=5, pady=5)
 
       #START SIM
       self.start_button = tk.Button(control_frame, text='START SIMULATION', command=self.start_simulation, font=self.normal_font, relief=tk.RAISED, borderwidth=2)
-      self.start_button.grid(row=2, column=0, padx=5, pady=5, sticky='ew')
+      self.start_button.grid(row=2, column=0, padx=5, pady=5)
       
       #STOP SIM
       self.stop_button = tk.Button(control_frame, text='STOP SIMULATION', command=self.stop_simulation, state=tk.DISABLED, font=self.normal_font, relief=tk.RAISED, borderwidth=2)
-      self.stop_button.grid(row=2, column=1, padx=5, pady=5, sticky='ew')
+      self.stop_button.grid(row=2, column=1, padx=5, pady=5)
 
+      #CLOSE
+      close_button = tk.Button(parent, text='CLOSE', command=self.root.quit, font=self.normal_font, relief=tk.RAISED, borderwidth=2, bg='red', fg='white')
+      close_button.grid(row=3, column=0, pady=10)
+      
       #UPDATE LOG DISPLAY
-      self.simulation_log = tk.Text(parent, height=40, width=80, wrap=tk.WORD, font=('Courier', 10), bg='white', fg='black')
-      self.simulation_log.grid(row=3, column=0, pady=10, sticky='nsew')
+      self.simulation_log = tk.Text(parent, height=30, width=60, wrap=tk.WORD, font=('Courier', 10), bg='white', fg='black')
+      self.simulation_log.grid(row=4, column=0, pady=10, padx=10, sticky='nsew')
       self.simulation_log.config(state=tk.DISABLED)
 
    '''
@@ -307,11 +323,11 @@ class Client:
       
       #LOG DISPLAY
       log_display = tk.Text(parent, height=8, width=30, wrap=tk.WORD, font=('Courier', 10), bg='white', fg='black')
-      log_display.grid(row=3, column=0, pady=10, sticky='ew')
+      log_display.grid(row=3, column=0, pady=10)
       
       #GENERATE NETWORK
       generate_btn = tk.Button(control_frame, text='GENERATE NETWORK', command=lambda: self.generate_network_topology(visual_frame, log_display), font=self.normal_font, relief=tk.RAISED, borderwidth=2)
-      generate_btn.grid(row=0, column=0, padx=10)
+      generate_btn.grid(row=0, column=0, pady=10)
       
       #CLOSE
       close_button = tk.Button(parent, text='CLOSE', command=self.root.quit, font=self.normal_font, relief=tk.RAISED, borderwidth=2, bg='red', fg='white')
@@ -367,6 +383,151 @@ class Client:
       log_display.insert(tk.END, f'TOTAL CONNECTIONS: {len(graph.edges())}\n')
       log_display.config(state=tk.DISABLED)
    
+   '''
+      GENERATES EVENT LOG UI
+   '''
+   def create_event_log_ui(self, parent):
+      parent.configure(bg='#C0C0C0')
+      
+      #PARENT GRID
+      parent.grid_rowconfigure(0, weight=0)
+      parent.grid_rowconfigure(1, weight=1)
+      parent.grid_rowconfigure(2, weight=0)
+      parent.grid_columnconfigure(0, weight=1)
+      
+      #TITLE
+      title_label = tk.Label(parent, text='INTRUSION EVENT LOGS', font=self.title_font, bg='#C0C0C0', fg='navy')
+      title_label.grid(row=0, column=0, pady=10, sticky='ew')
+      
+      #LOGS DISPLAY
+      self.event_logs = tk.Text(parent, width=100, height=30, wrap=tk.WORD, font=('Courier', 10), bg='white', fg='black')
+      self.event_logs.grid(row=1, column=0, pady=10, sticky='nsew')
+      self.event_logs.config(state=tk.DISABLED)
+      
+      #BUTTON FRAME
+      button_frame = tk.Frame(parent, bg='#C0C0C0')
+      button_frame.grid(row=2, column=0, pady=10)
+      
+      #REFRESH LOG BUTTON
+      refresh_button = tk.Button(button_frame, text='REFRESH LOGS', command=self.refresh_event_logs, font=self.normal_font, relief=tk.RAISED, borderwidth=2)
+      refresh_button.pack(side=tk.LEFT, padx=5)
+      
+      #EXPORT LOG BUTTON
+      export_button = tk.Button(button_frame, text='EXPORT LOGS', command=self.export_event_logs, font=self.normal_font, relief=tk.RAISED, borderwidth=2)
+      export_button.pack(side=tk.LEFT, padx=5)
+      
+      #CLOSE BUTTON
+      close_button = tk.Button(parent, text='CLOSE', command=self.root.quit, font=self.normal_font, relief=tk.RAISED, borderwidth=2, bg='red', fg='white')
+      close_button.grid(row=3, column=0, pady=10)
+    
+      #INITIAL REFRESH
+      self.refresh_event_logs()
+      
+   '''
+      METHOD THAT REFRESHES EVENT LOG
+   '''
+   def refresh_event_logs(self):
+      self.event_logs.config(state=tk.NORMAL)
+      self.event_logs.delete(1.0, tk.END)
+      
+      self.cursor.execute('''
+         SELECT timestamp, source_ip, attack_type, severity, response, is_active 
+         FROM intrusion_command_events 
+         ORDER BY timestamp DESC
+      ''')
+      events = self.cursor.fetchall()
+      
+      if not events:
+         self.event_logs.insert(tk.END, 'NO EVENT LOGS FOUND\n')
+      else:
+         for event in events:
+            active_status = 'ACTIVE' if event[5] else 'NEUTRALIZED'
+            log_entry = (f'TIMESTAMP: {event[0]}\n'
+                         f'SOURCE IP: {event[1]}\n'
+                         f'ATTACK TYPE: {event[2]}\n'
+                         f'SEVERITY: {event[3]}\n'
+                         f'RESPONSE: {event[4]}\n'
+                         f'STATUS: {active_status}\n\n')
+            self.event_logs.insert(tk.END, log_entry)
+      
+      self.event_logs.config(state=tk.DISABLED)
+      
+   '''
+      METHOD THAT HANDLES EXPORTING LOG TO FILE
+   '''
+   def export_event_logs(self):
+      
+      #OPEN FILE PATH TO SAVE
+      file_path = filedialog.asksaveasfilename(
+         defaultextension='.txt',
+         filetypes=[('Text files', '*.txt'), ('All files', '*.*')],
+         title='EXPORT EVENT LOGS'
+      )
+      
+      if file_path:
+         try:
+            with open(file_path, 'w') as file:
+               self.cursor.execute('''
+                  SELECT timestamp, source_ip, attack_type, severity, response, is_active 
+                  FROM intrusion_command_events 
+                  ORDER BY timestamp DESC
+               ''')
+               events = self.cursor.fetchall()
+                
+               if not events:
+                  file.write('NO EVENT LOGS FOUND\n')
+               else:
+                  for event in events:
+                     active_status = 'ACTIVE' if event[5] else 'NEUTRALIZED'
+                     log_entry = (f'TIMESTAMP: {event[0]}\n'
+                                  f'SOURCE IP: {event[1]}\n'
+                                  f'ATTACK TYPE: {event[2]}\n'
+                                  f'SEVERITY: {event[3]}\n'
+                                  f'RESPONSE: {event[4]}\n'
+                                  f'STATUS: {active_status}\n\n')
+                     file.write(log_entry)
+            
+            messagebox.showinfo('EXPORT SUCCESSFUL', f'LOGS EXPORTED TO {file_path}')
+         except Exception as e:
+            messagebox.showerror('EXPORT FAILED', f'ERROR: {str(e)}')
+   
+   '''
+      GENERATES ABOUT TAB UI
+   '''
+   def create_about_ui(self, parent):
+      parent.configure(bg='#C0C0C0')
+      
+      #PARENT GRID
+      parent.grid_rowconfigure(0, weight=0)
+      parent.grid_rowconfigure(1, weight=0)
+      parent.grid_rowconfigure(2, weight=0)
+      parent.grid_columnconfigure(0, weight=1)
+      
+      #TITLE
+      title_label = tk.Label(parent, text='ABOUT STUDENT PROJECT', font=self.title_font, bg='#C0C0C0', fg='navy')
+      title_label.grid(row=0, column=0, pady=10, sticky='ew')
+      
+      #CUSTOM ABOUT TEXT
+      about_text = tk.Text(parent, width=100, height=30, wrap=tk.WORD, font=('Courier', 10), bg='white', fg='black', borderwidth=2, relief=tk.SUNKEN)
+      about_text.grid(row=1, column=0, pady=10, padx=10, sticky='nsew')
+      about_text.tag_configure('title', font=('Courier', 12, 'bold'))
+      about_text.tag_configure('section', font=('Courier', 10, 'bold'))
+      
+      #ABOUT INFORMATION
+      about_text.config(state=tk.NORMAL)
+      about_text.insert(tk.END, 'COMMAND INTRUSION RESPONSE SYSTEM\n', 'title')
+      about_text.insert(tk.END, '\nVERSION: 1.0.0\n', 'section')
+      about_text.insert(tk.END, 'DEVELOPED: 2024\n\n')
+      
+      about_text.insert(tk.END, 'DISCLAIMER:\n', 'section')
+      about_text.insert(tk.END, '[THIS SOFTWARE IS FOR EDUCATIONAL PURPOSES AND DEMONSTRATION ONLY]')
+    
+      about_text.config(state=tk.DISABLED)
+      
+      #CLOSE BUTTON
+      close_button = tk.Button(parent, text='CLOSE', command=self.root.quit, font=self.normal_font, relief=tk.RAISED, borderwidth=2, bg='red', fg='white')
+      close_button.grid(row=2, column=0, pady=10)
+      
    '''
       ADD METHOD THAT ADDS INPUT FROM MANAGEMENT UI INTO THE DATABASE FOR STORAGE
    '''
@@ -532,8 +693,6 @@ class Client:
          "ELIMINATE THREAT?"
       )
 
-      
-      
       #SET UP LOG
       self.simulation_log.config(state=tk.NORMAL)
       self.simulation_log.delete(1.0, tk.END)
@@ -560,8 +719,6 @@ class Client:
       ''', (technique,))
       result = self.cursor.fetchone()
       severity, response = result if result else ('UNKNOWN', 'NO RESPONSE DEFINED')
-      
-      
       
       #INSERT EVENT INTO LOG TABLE
       try:
@@ -638,8 +795,6 @@ class Client:
    def stop_simulation(self):
       self.defcon_var.set('[DEFCON 5] ALL SYSTEMS ARE ONLINE AND IN STANDBY')
       self.defcon_label.config(fg='blue')
-      
-      
       
       self.simulation_log.config(state=tk.NORMAL)
       self.simulation_log.insert(tk.END, f'SIMULATION STOPPED: {datetime.now()}\n\n')
