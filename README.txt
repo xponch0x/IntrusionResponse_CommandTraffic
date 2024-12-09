@@ -1,6 +1,6 @@
 IntrusionResponse_CommandTraffic
 
-@Author: Eli Hofmann, Austin Jansky, Leo Dunor
+@Author: Eli Hofmann
 @Version: 12-20-2024
 Defensive Network Security Project
 

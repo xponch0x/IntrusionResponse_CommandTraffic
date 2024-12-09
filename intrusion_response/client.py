@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 '''
-   @Authors Eli Hofmann, Austin Jansky, Leo Dunor
+   @Authors Eli Hofmann
    @Version 12-20-2024
    DESCRIPTION: A BASIC INTRUSION RESPONSE PROGRAM FOR ROBOTIC COMMANDS
    [DEFENSIVE NETWORK SECURITY]
