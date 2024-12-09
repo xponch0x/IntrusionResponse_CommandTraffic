@@ -37,7 +37,7 @@ class Client:
       
       self.root = root
       self.root.title('Command Intrusion Response System')
-      self.root.geometry('900x900')
+      self.root.geometry('1024x800')
       self.root.configure(bg='#C0C0C0')
       
       self.title_font = ('Comic Sans MS', 10, 'bold')
@@ -226,7 +226,7 @@ class Client:
       close_button.grid(row=3, column=0, pady=10)
       
       #UPDATE LOG DISPLAY
-      self.simulation_log = tk.Text(parent, height=30, width=60, wrap=tk.WORD, font=('Courier', 10), bg='white', fg='black')
+      self.simulation_log = tk.Text(parent, height=15, width=50, wrap=tk.WORD, font=('Courier', 10), bg='white', fg='black')
       self.simulation_log.grid(row=4, column=0, pady=10, padx=10, sticky='nsew')
       self.simulation_log.config(state=tk.DISABLED)
 
@@ -508,7 +508,7 @@ class Client:
       title_label.grid(row=0, column=0, pady=10, sticky='ew')
       
       #CUSTOM ABOUT TEXT
-      about_text = tk.Text(parent, width=100, height=30, wrap=tk.WORD, font=('Courier', 10), bg='white', fg='black', borderwidth=2, relief=tk.SUNKEN)
+      about_text = tk.Text(parent, width=70, height=15, wrap=tk.WORD, font=('Courier', 10), bg='white', fg='black', borderwidth=2, relief=tk.SUNKEN)
       about_text.grid(row=1, column=0, pady=10, padx=10, sticky='nsew')
       about_text.tag_configure('title', font=('Courier', 12, 'bold'))
       about_text.tag_configure('section', font=('Courier', 10, 'bold'))
@@ -686,11 +686,11 @@ class Client:
          
       #PROMPT USER WITH THREATE DETAILS AND RESPONSES
       alert_message = (
-         f"THREAT DETECTED!\n\n"
-         f"TYPE: {technique}\n"
-         f"SEVERITY: {severity}\n"
-         f"RECOMMENDED RESPONSE: {response}\n\n"
-         "ELIMINATE THREAT?"
+         f'THREAT DETECTED!\n\n'
+         f'TYPE: {technique}\n'
+         f'SEVERITY: {severity}\n'
+         f'RECOMMENDED RESPONSE: {response}\n\n'
+         'ELIMINATE THREAT?'
       )
 
       #SET UP LOG
